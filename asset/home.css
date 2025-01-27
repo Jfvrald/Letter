@@ -29,7 +29,7 @@ body {
   border-radius: 10px;
   width: 250px;
   cursor: pointer;
-  background-color: transparent;
+  background-color: #24242479;
   border: 2px solid white;
   box-shadow: rgb(0 0 0 / 10%) 0 0 6px;
   transition: all 0.5s ease;
