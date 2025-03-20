@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Glow Effect with Bubbles</title>
+
     <style>
         /* Black Background */
         body {
@@ -16,6 +17,64 @@
             padding: 0;
         }
 
+        /* Animated Background Bubbles */
+        .bubbles {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .bubble {
+            position: absolute;
+            bottom: -50px;
+            background-color: rgba(191, 123, 255, 0.3);
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: rise 10s infinite ease-in-out;
+        }
+
+        @keyframes rise {
+            0% {
+                transform: translateY(0);
+                opacity: 0;
+            }
+            50% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-100vh);
+                opacity: 0;
+            }
+        }
+
+        /* Purple Blurred Lights */
+        .blur-light {
+            position: fixed;
+            width: 150px;
+            height: 150px;
+            background: rgba(150, 0, 255, 0.5);
+            filter: blur(50px);
+            border-radius: 50%;
+            animation: moveLights 8s infinite linear alternate;
+            pointer-events: none;
+        }
+
+        .blur-light:nth-child(2) {
+            animation-duration: 6s;
+        }
+
+        @keyframes moveLights {
+            0% {
+                transform: translate(10vw, 20vh);
+            }
+            100% {
+                transform: translate(80vw, 70vh);
+            }
+        }
 
         /* Container for Centered Button & Message */
         .container {
@@ -94,119 +153,20 @@
             transform: scale(1);
         }
 
-        /* Wave Effect Styles */
-        @keyframes move_wave {
-            0% {
-                transform: translateX(0) translateZ(0) scaleY(1);
-            }
-            50% {
-                transform: translateX(-25%) translateZ(0) scaleY(0.55);
-            }
-            100% {
-                transform: translateX(-50%) translateZ(0) scaleY(1);
-            }
-        }
-
-        .waveWrapper {
-            overflow: hidden;
-            position: absolute;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            top: 0;
-            margin: auto;
-        }
-
-        .waveWrapperInner {
-            position: absolute;
-            width: 100%;
-            overflow: hidden;
-            height: 100%;
-            bottom: -1px;
-            background-image: linear-gradient(to top, #2d075e 20%, #27273c 80%);
-        }
-
-        .bgTop {
-            z-index: 15;
-            opacity: 0.5;
-        }
-
-        .bgMiddle {
-            z-index: 10;
-            opacity: 0.75;
-        }
-
-        .bgBottom {
-            z-index: 5;
-        }
-
-        .wave {
-            position: absolute;
-            left: 0;
-            width: 200%;
-            height: 100%;
-            background-repeat: repeat no-repeat;
-            background-position: 0 bottom;
-            transform-origin: center bottom;
-        }
-
-        .waveTop {
-            background-size: 50% 100px;
-        }
-
-        .waveAnimation .waveTop {
-            animation: move_wave 3s;
-            -webkit-animation: move_wave 3s;
-            -webkit-animation-delay: 1s;
-            animation-delay: 1s;
-        }
-
-        .waveMiddle {
-            background-size: 50% 120px;
-        }
-
-        .waveAnimation .waveMiddle {
-            animation: move_wave 10s linear infinite;
-        }
-
-        .waveBottom {
-            background-size: 50% 100px;
-        }
-
-        .waveAnimation .waveBottom {
-            animation: move_wave 15s linear infinite;
-        }
     </style>
 </head>
 <body>
 
+    <div class="bubbles"></div>
+    <div class="blur-light"></div>
+    <div class="blur-light"></div>
+
     <div class="container">
-        <div id="message">I miss you <3</div>
-        <button onclick="showMessage()">Donna Mar Pantoja</button>
+        <div id="message">Hello, Welcome to the Glow Effect!</div>
+        <button onclick="showMessage()">CLICK ME</button>
     </div>
-
-    <!-- Wave Effect -->
-    <div class="waveWrapper waveAnimation">
-        <div class="waveWrapperInner bgTop">
-            <div class="wave waveTop" style="background-image: url('http://front-end-noobs.com/jecko/img/wave-top.png')"></div>
-        </div>
-        <div class="waveWrapperInner bgMiddle">
-            <div class="wave waveMiddle" style="background-image: url('http://front-end-noobs.com/jecko/img/wave-mid.png')"></div>
-        </div>
-        <div class="waveWrapperInner bgBottom">
-            <div class="wave waveBottom" style="background-image: url('http://front-end-noobs.com/jecko/img/wave-bot.png')"></div>
-        </div>
-    </div>
-
-    <!-- Floating Bubbles -->
+    <audio id="backgroundMusic" src="bg.mp3" preload="auto"></audio>
     <script>
-        // Create 15 bubbles
-        for (let i = 0; i < 15; i++) {
-            let bubble = document.createElement("div");
-            bubble.className = "bubble";
-            document.body.appendChild(bubble);
-        }
-
         // Show message function
         function showMessage() {
             let message = document.getElementById("message");
@@ -215,11 +175,35 @@
             message.hideTimeout = setTimeout(() => {
                 message.classList.remove("show");
             }, 3000);
+
+            // Play audio
+            const audio = document.getElementById('backgroundMusic');
+            if (audio.paused) {
+                audio.play().catch(error => console.log("Audio play failed: ", error));
+            }
         }
 
-        // Debugging: Log to console to ensure script is running
-        console.log("Bubbles script is running!");
-    </script>
+        // Create bubbles dynamically
+        function createBubbles() {
+            const bubbleContainer = document.querySelector(".bubbles");
+            for (let i = 0; i < 20; i++) {
+                let bubble = document.createElement("div");
+                bubble.classList.add("bubble");
+                let size = Math.random() * 60 + 20;
+                bubble.style.width = `${size}px`;
+                bubble.style.height = `${size}px`;
+                bubble.style.left = `${Math.random() * 100}vw`;
+                bubble.style.animationDuration = `${Math.random() * 5 + 5}s`;
+                bubbleContainer.appendChild(bubble);
+            }
+        }
 
+        createBubbles();
+
+        // Remove autoplay attempt on page load
+        window.addEventListener('load', function() {
+            console.log("Page loaded");
+        });
+    </script>
 </body>
 </html>
