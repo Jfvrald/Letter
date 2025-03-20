@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glow Effect with Bubbles</title>
+    <style>
+        /* Black Background */
+        body {
+            background-color: #000;
+            overflow: hidden; /* Prevent scrolling */
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        /* Container for Centered Button & Message */
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            position: relative;
+            z-index: 1000; /* Ensures button & message stay above bubbles */
+        }
+
+        /* Updated Button Styles */
+        button {
+            --glow-color: rgb(217, 176, 255);
+            --glow-spread-color: rgba(191, 123, 255, 0.781);
+            --btn-color: rgb(100, 61, 136);
+
+            border: .35em solid var(--glow-color);
+            padding: 1.5em 4em;
+            color: var(--glow-color);
+            font-size: 20px;
+            font-weight: bold;
+            background-color: var(--btn-color);
+            border-radius: 1.5em;
+            outline: none;
+            cursor: pointer;
+
+            box-shadow: 0 0 1.5em .35em var(--glow-color),
+                        0 0 5em 1.5em var(--glow-spread-color),
+                        inset 0 0 1em .35em var(--glow-color);
+            text-shadow: 0 0 .75em var(--glow-color);
+            transition: all 0.3s;
+            z-index: 20; /* Ensure button is on top of all layers */
+            position: relative;
+        }
+
+        button:hover {
+            color: var(--btn-color);
+            background-color: var(--glow-color);
+            box-shadow: 0 0 1.5em .35em var(--glow-color),
+                        0 0 5em 2em var(--glow-spread-color),
+                        inset 0 0 1em .35em var(--glow-color);
+        }
+
+        /* Responsive Button for Phones */
+        @media (max-width: 768px) {
+            button {
+                font-size: 16px;
+                padding: 1em 3em;
+            }
+        }
+
+        /* Message Styles */
+        #message {
+            margin-bottom: 40px;
+            padding: 10px 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            text-align: center;
+            border-radius: 10px;
+            
+            background: rgba(191, 123, 255, 0.5);
+            border: 2px solid rgba(217, 176, 255, 0.8);
+            box-shadow: 0 0 15px rgba(217, 176, 255, 0.5);
+            
+            opacity: 0;
+            transform: scale(0.9);
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+        }
+
+        /* Show message */
+        #message.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Wave Effect Styles */
+        @keyframes move_wave {
+            0% {
+                transform: translateX(0) translateZ(0) scaleY(1);
+            }
+            50% {
+                transform: translateX(-25%) translateZ(0) scaleY(0.55);
+            }
+            100% {
+                transform: translateX(-50%) translateZ(0) scaleY(1);
+            }
+        }
+
+        .waveWrapper {
+            overflow: hidden;
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            top: 0;
+            margin: auto;
+        }
+
+        .waveWrapperInner {
+            position: absolute;
+            width: 100%;
+            overflow: hidden;
+            height: 100%;
+            bottom: -1px;
+            background-image: linear-gradient(to top, #2d075e 20%, #27273c 80%);
+        }
+
+        .bgTop {
+            z-index: 15;
+            opacity: 0.5;
+        }
+
+        .bgMiddle {
+            z-index: 10;
+            opacity: 0.75;
+        }
+
+        .bgBottom {
+            z-index: 5;
+        }
+
+        .wave {
+            position: absolute;
+            left: 0;
+            width: 200%;
+            height: 100%;
+            background-repeat: repeat no-repeat;
+            background-position: 0 bottom;
+            transform-origin: center bottom;
+        }
+
+        .waveTop {
+            background-size: 50% 100px;
+        }
+
+        .waveAnimation .waveTop {
+            animation: move_wave 3s;
+            -webkit-animation: move_wave 3s;
+            -webkit-animation-delay: 1s;
+            animation-delay: 1s;
+        }
+
+        .waveMiddle {
+            background-size: 50% 120px;
+        }
+
+        .waveAnimation .waveMiddle {
+            animation: move_wave 10s linear infinite;
+        }
+
+        .waveBottom {
+            background-size: 50% 100px;
+        }
+
+        .waveAnimation .waveBottom {
+            animation: move_wave 15s linear infinite;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="message">Hello, Welcome to the Glow Effect!</div>
+        <button onclick="showMessage()">CLICK ME</button>
+    </div>
+
+    <!-- Wave Effect -->
+    <div class="waveWrapper waveAnimation">
+        <div class="waveWrapperInner bgTop">
+            <div class="wave waveTop" style="background-image: url('http://front-end-noobs.com/jecko/img/wave-top.png')"></div>
+        </div>
+        <div class="waveWrapperInner bgMiddle">
+            <div class="wave waveMiddle" style="background-image: url('http://front-end-noobs.com/jecko/img/wave-mid.png')"></div>
+        </div>
+        <div class="waveWrapperInner bgBottom">
+            <div class="wave waveBottom" style="background-image: url('http://front-end-noobs.com/jecko/img/wave-bot.png')"></div>
+        </div>
+    </div>
+
+    <!-- Floating Bubbles -->
+    <script>
+        // Create 15 bubbles
+        for (let i = 0; i < 15; i++) {
+            let bubble = document.createElement("div");
+            bubble.className = "bubble";
+            document.body.appendChild(bubble);
+        }
+
+        // Show message function
+        function showMessage() {
+            let message = document.getElementById("message");
+            clearTimeout(message.hideTimeout);
+            message.classList.add("show");
+            message.hideTimeout = setTimeout(() => {
+                message.classList.remove("show");
+            }, 3000);
+        }
+
+        // Debugging: Log to console to ensure script is running
+        console.log("Bubbles script is running!");
+    </script>
+
+</body>
+</html>
